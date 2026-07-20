@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/${locale}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/${locale}/cart`,
-      locale: locale === 'ar' ? 'ar' : locale === 'fr' ? 'fr' : 'en',
+      locale: locale === 'fr' ? 'fr' : 'en',
     });
 
     return NextResponse.json({ url: session.url });
