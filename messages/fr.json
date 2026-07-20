@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "products": "Nos Cookies",
+    "packs": "Nos Packs",
+    "about": "Notre Histoire",
+    "contact": "Contact",
+    "cart": "Panier"
+  },
+  "hero": {
+    "tagline": "Cuisinés avec amour, partagés avec joie",
+    "subtitle": "Des cookies faits main par deux sœurs, pour chaque doux moment de votre vie.",
+    "cta": "Commander",
+    "cta2": "Notre Histoire"
+  },
+  "featured": {
+    "title": "Nos Cookies Signature",
+    "subtitle": "Chaque cookie est préparé avec les meilleurs ingrédients et beaucoup d'amour."
+  },
+  "about": {
+    "title": "Sweet by Sisters",
+    "subtitle": "Notre Histoire",
+    "story": "Née d'une passion commune pour la pâtisserie, Sweet by Sisters a été créée par deux sœurs qui croient que chaque cookie raconte une histoire. De notre cuisine à votre maison, nous mettons de l'amour dans chaque bouchée.",
+    "values_title": "Fait avec Cœur",
+    "value1_title": "Fait Main",
+    "value1_desc": "Chaque cookie est fait à la main avec soin et attention aux détails.",
+    "value2_title": "Ingrédients Frais",
+    "value2_desc": "Nous utilisons uniquement les meilleurs ingrédients frais dans chaque fournée.",
+    "value3_title": "Avec Amour",
+    "value3_desc": "Deux sœurs qui cuisinent ensemble, partageant la joie un cookie à la fois."
+  },
+  "products": {
+    "title": "Notre Collection de Cookies",
+    "subtitle": "Choisissez vos préférés et faites-vous plaisir !",
+    "add_to_cart": "Ajouter au panier",
+    "currency": "€",
+    "per_unit": "/ cookie",
+    "box_of": "Boîte de",
+    "out_of_stock": "Rupture de stock"
+  },
+  "cart": {
+    "title": "Votre Panier",
+    "empty": "Votre panier est vide",
+    "empty_sub": "Allez choisir de délicieux cookies !",
+    "shop_now": "Commander",
+    "total": "Total",
+    "checkout": "Passer la commande",
+    "remove": "Supprimer",
+    "quantity": "Qté"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Une question ou une commande personnalisée ? Nous serions ravies de vous entendre !",
+    "name": "Votre Nom",
+    "email": "Votre Email",
+    "message": "Votre Message",
+    "send": "Envoyer",
+    "instagram": "Retrouvez-nous sur Instagram",
+    "whatsapp": "Discutez sur WhatsApp"
+  },
+  "footer": {
+    "tagline": "Cuisinés avec amour par deux sœurs.",
+    "rights": "Tous droits réservés."
+  }
+}

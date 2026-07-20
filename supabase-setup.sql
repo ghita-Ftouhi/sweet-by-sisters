@@ -1,0 +1,125 @@
+-- =============================================
+-- SWEET BY SISTER — Supabase Database Setup
+-- Colle ce script dans Supabase > SQL Editor
+-- =============================================
+
+-- 1. PRODUCTS
+create table if not exists products (
+  id          text primary key,
+  slug        text not null,
+  emoji       text not null,
+  name_en     text not null,
+  name_fr     text not null,
+  name_ar     text not null,
+  desc_en     text not null,
+  desc_fr     text not null,
+  desc_ar     text not null,
+  price       numeric(6,2) not null,
+  in_stock    boolean not null default true,
+  badge       text,
+  sort_order  int default 0,
+  created_at  timestamptz default now()
+);
+
+-- 2. PACKS
+create table if not exists packs (
+  id             text primary key,
+  emoji          text not null,
+  name_en        text not null,
+  name_fr        text not null,
+  name_ar        text not null,
+  desc_en        text not null,
+  desc_fr        text not null,
+  desc_ar        text not null,
+  size           int not null,
+  price          numeric(6,2) not null,
+  original_price numeric(6,2) not null,
+  badge          text,
+  badge_color    text,
+  popular        boolean default false,
+  active         boolean default true,
+  sort_order     int default 0
+);
+
+-- 3. ORDERS
+create table if not exists orders (
+  id             uuid primary key default gen_random_uuid(),
+  created_at     timestamptz default now(),
+  status         text not null default 'pending',
+  total          numeric(8,2) not null,
+  payment_method text not null,
+  locale         text default 'fr',
+  customer_note  text,
+  items          jsonb not null default '[]'
+);
+-- status values: pending | preparing | ready | delivered | cancelled
+
+-- =============================================
+-- SEED: Initial products data
+-- =============================================
+insert into products (id, slug, emoji, name_en, name_fr, name_ar, desc_en, desc_fr, desc_ar, price, in_stock, badge, sort_order) values
+('1', 'classic-chocolate-chip', '🍪', 'Classic Chocolate Chip', 'Pépites de Chocolat', 'شوكولاتة كلاسيكية',
+ 'Golden, buttery cookies loaded with rich chocolate chips.',
+ 'Cookies dorés et beurrés, généreux en pépites de chocolat.',
+ 'كوكيز ذهبية زبدانية مليئة بقطع الشوكولاتة.',
+ 3.50, true, 'bestseller', 1),
+('2', 'double-chocolate', '🖤', 'Double Chocolate', 'Double Chocolat', 'شوكولاتة مضاعفة',
+ 'Fudgy dark cocoa base with white and dark chocolate chunks.',
+ 'Base cacao intense avec des morceaux de chocolat blanc et noir.',
+ 'قاعدة كاكاو داكنة مع قطع شوكولاتة بيضاء وداكنة.',
+ 4.00, true, 'new', 2),
+('3', 'vanilla-pink-sugar', '🌸', 'Vanilla Pink Sugar', 'Vanille Sucre Rose', 'فانيليا وسكر وردي',
+ 'Soft vanilla cookies with pink sugar crystals & a dreamy glaze.',
+ 'Cookies vanille moelleux avec sucre rose et glaçage fondant.',
+ 'كوكيز فانيليا ناعمة مع بلورات السكر الوردي وتزجيج حالم.',
+ 3.50, true, null, 3),
+('4', 'salted-caramel', '🍯', 'Salted Caramel', 'Caramel Salé', 'كراميل مالح',
+ 'Chewy caramel-filled cookies with a perfect pinch of sea salt.',
+ 'Cookies moelleux fourrés au caramel avec une pincée de sel de mer.',
+ 'كوكيز مطاطة محشوة بالكراميل مع رشة ملح البحر.',
+ 4.50, true, 'bestseller', 4),
+('5', 'strawberry-cream', '🍓', 'Strawberry & Cream', 'Fraise & Crème', 'فراولة وكريم',
+ 'Fruity strawberry cookies with a creamy white chocolate drizzle.',
+ 'Cookies aux fraises avec filet de chocolat blanc crémeux.',
+ 'كوكيز فراولة مثمرة مع رذاذ شوكولاتة بيضاء كريمية.',
+ 4.00, true, 'new', 5),
+('6', 'pistachio-rosewater', '💚', 'Pistachio & Rosewater', 'Pistache & Eau de Rose', 'فستق وماء الورد',
+ 'Exotic pistachio cookies perfumed with delicate rosewater.',
+ 'Cookies pistache exotiques parfumés à l''eau de rose.',
+ 'كوكيز فستق فاخرة معطرة بماء الورد اللطيف.',
+ 5.00, false, 'limited', 6)
+on conflict (id) do nothing;
+
+-- =============================================
+-- SEED: Initial packs data
+-- =============================================
+insert into packs (id, emoji, name_en, name_fr, name_ar, desc_en, desc_fr, desc_ar, size, price, original_price, badge, badge_color, popular, sort_order) values
+('pack-6', '🎀', 'Discovery Box', 'Box Découverte', 'صندوق الاكتشاف',
+ 'Perfect for trying our flavors. 6 cookies of your choice.',
+ 'Parfait pour découvrir nos saveurs. 6 cookies de votre choix.',
+ 'مثالي لتجربة نكهاتنا. 6 كوكيز من اختيارك.',
+ 6, 18.00, 21.00, 'Populaire', 'bg-rose-main', true, 1),
+('pack-12', '💝', 'Gourmet Box', 'Box Gourmande', 'صندوق الذواقة',
+ 'The perfect gift box. 12 cookies of your choice.',
+ 'La boîte cadeau parfaite. 12 cookies de votre choix.',
+ 'صندوق الهدايا المثالي. 12 كوكيز من اختيارك.',
+ 12, 34.00, 42.00, 'Meilleur choix', 'bg-gold', false, 2),
+('pack-18', '👨‍👩‍👧‍👦', 'Family Box', 'Box Famille', 'صندوق العائلة',
+ 'Made to share! 18 cookies of your choice.',
+ 'Fait pour partager ! 18 cookies de votre choix.',
+ 'صُنع للمشاركة! 18 كوكيز من اختيارك.',
+ 18, 48.00, 63.00, 'Meilleure valeur', 'bg-plum', false, 3)
+on conflict (id) do nothing;
+
+-- =============================================
+-- Enable Row Level Security (lecture publique)
+-- =============================================
+alter table products enable row level security;
+alter table packs enable row level security;
+alter table orders enable row level security;
+
+create policy "Public read products" on products for select using (true);
+create policy "Public read packs" on packs for select using (true);
+create policy "Insert orders" on orders for insert with check (true);
+create policy "Public read orders" on orders for select using (true);
+create policy "Update orders" on orders for update using (true);

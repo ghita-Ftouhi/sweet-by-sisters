@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Our Cookies",
+    "packs": "Our Packs",
+    "about": "Our Story",
+    "contact": "Contact",
+    "cart": "Cart"
+  },
+  "hero": {
+    "tagline": "Baked with love, shared with joy",
+    "subtitle": "Handcrafted cookies made by two sisters, for every sweet moment in your life.",
+    "cta": "Shop Now",
+    "cta2": "Our Story"
+  },
+  "featured": {
+    "title": "Our Signature Cookies",
+    "subtitle": "Every cookie is crafted with the finest ingredients and a whole lot of love."
+  },
+  "about": {
+    "title": "Sweet by Sisters",
+    "subtitle": "Our Story",
+    "story": "Born from a shared passion for baking, Sweet by Sisters was created by two sisters who believe that every cookie tells a story. From our kitchen to your home, we pour love into every bite.",
+    "values_title": "Made with Heart",
+    "value1_title": "Handcrafted",
+    "value1_desc": "Every cookie is made by hand with care and attention to detail.",
+    "value2_title": "Fresh Ingredients",
+    "value2_desc": "We use only the finest, freshest ingredients in every batch.",
+    "value3_title": "Made with Love",
+    "value3_desc": "Sisters baking together, sharing joy one cookie at a time."
+  },
+  "products": {
+    "title": "Our Cookie Collection",
+    "subtitle": "Choose your favorites and treat yourself!",
+    "add_to_cart": "Add to Cart",
+    "currency": "$",
+    "per_unit": "/ cookie",
+    "box_of": "Box of",
+    "out_of_stock": "Out of Stock"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "empty_sub": "Go pick some delicious cookies!",
+    "shop_now": "Shop Now",
+    "total": "Total",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "quantity": "Qty"
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Have a question or a custom order? We'd love to hear from you!",
+    "name": "Your Name",
+    "email": "Your Email",
+    "message": "Your Message",
+    "send": "Send Message",
+    "instagram": "Find us on Instagram",
+    "whatsapp": "Chat on WhatsApp"
+  },
+  "footer": {
+    "tagline": "Baked with love by two sisters.",
+    "rights": "All rights reserved."
+  }
+}
