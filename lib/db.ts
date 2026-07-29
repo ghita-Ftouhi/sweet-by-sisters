@@ -7,6 +7,7 @@ function rowToProduct(r: Record<string, unknown>): Product {
     id: r.id as string,
     slug: r.slug as string,
     emoji: r.emoji as string,
+    images: (r.images as string[] | null) ?? undefined,
     nameEn: r.name_en as string,
     nameFr: r.name_fr as string,
     nameAr: r.name_ar as string,

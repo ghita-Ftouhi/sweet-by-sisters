@@ -4,8 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { getProductName } from '@/lib/products';
 import Link from 'next/link';
 import { useState } from 'react';
-
-const MIN_COOKIES = 4;
+import { MIN_COOKIES_PER_ORDER, WHATSAPP_NUMBER } from '@/lib/constants';
 
 async function saveOrderToDB(orderItems: unknown[], boxes: unknown[], total: number, paymentMethod: 'card' | 'whatsapp', locale: string) {
   try {
@@ -29,8 +28,7 @@ function buildWhatsAppUrl(
   });
   const allLines = [...itemLines, ...boxLines].join('\n');
   const message = `🍪 *Nouvelle commande Sweets by Sisters* 🍪\n\n${allLines}\n\n*Total : €${total.toFixed(2)}*\n\n🍪 Merci pour votre commande ! 💕`;
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '';
-  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
 export default function CartPage() {
@@ -40,7 +38,7 @@ export default function CartPage() {
   const { items, boxes, removeItem, updateQty, removeBox, total, count } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const ready = count >= MIN_COOKIES;
+  const ready = count >= MIN_COOKIES_PER_ORDER;
 
   const buildOrderItems = () => [
     ...items.map(({ product, quantity }) => ({
@@ -171,7 +169,7 @@ export default function CartPage() {
 
               {!ready && (
                 <p className="text-center text-xs text-rose-main mb-3 font-medium">
-                  🍪 Encore {MIN_COOKIES - count} cookie{MIN_COOKIES - count > 1 ? 's' : ''} pour valider
+                  🍪 Encore {MIN_COOKIES_PER_ORDER - count} cookie{MIN_COOKIES_PER_ORDER - count > 1 ? 's' : ''} pour valider
                 </p>
               )}
 
@@ -221,7 +219,7 @@ export default function CartPage() {
               ) : (
                 <button disabled
                   className="w-full py-4 rounded-full font-semibold text-lg bg-gray-200 text-gray-400 cursor-not-allowed">
-                  Minimum {MIN_COOKIES} cookies requis
+                  Minimum {MIN_COOKIES_PER_ORDER} cookies requis
                 </button>
               )}
             </div>

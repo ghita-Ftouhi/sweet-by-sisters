@@ -1,6 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { WHATSAPP_NUMBER } from '@/lib/constants';
 
 const socials = [
   {
@@ -18,7 +19,7 @@ const socials = [
   {
     label: 'WhatsApp',
     handle: '+212 780 615 048',
-    href: 'https://wa.me/212780615048',
+    href: `https://wa.me/${WHATSAPP_NUMBER}`,
     gradient: 'from-green-400 to-emerald-500',
     shadow: 'shadow-green-200',
     icon: (
@@ -68,13 +69,21 @@ const socials = [
 export default function ContactPage() {
   const t = useTranslations('contact');
   const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState<'idle' | 'sent'>('idle');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const msg = `💌 Nouveau message de ${form.name}\n📧 ${form.email}\n\n${form.message}`;
-    window.open(`https://wa.me/212780615048?text=${encodeURIComponent(msg)}`, '_blank');
-    setStatus('sent');
+    setStatus('sending');
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      setStatus(res.ok ? 'sent' : 'error');
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -153,9 +162,15 @@ export default function ContactPage() {
                     placeholder="Écris ton message ici..."
                     className="w-full border-2 border-pink-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-main transition-colors bg-pink-50/30 resize-none placeholder-gray-300" />
                 </div>
-                <button type="submit"
-                  className="bg-gradient-to-r from-rose-main to-pink-400 text-white py-4 rounded-2xl font-bold text-base hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                  {t('send')} 💌
+                {status === 'error' && (
+                  <p className="text-red-500 text-sm text-center">
+                    Erreur d&apos;envoi. Réessaie ou écris-nous directement sur{' '}
+                    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="underline font-semibold">WhatsApp</a>.
+                  </p>
+                )}
+                <button type="submit" disabled={status === 'sending'}
+                  className="bg-gradient-to-r from-rose-main to-pink-400 text-white py-4 rounded-2xl font-bold text-base hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-60">
+                  {status === 'sending' ? 'Envoi...' : <>{t('send')} 💌</>}
                 </button>
               </form>
             )}

@@ -66,13 +66,23 @@ export default function AdminPage() {
 
   const saveProduct = async () => {
     if (!editingProduct) return;
-    await supabase.from('products').update({
-      price: editingProduct.price,
-      in_stock: editingProduct.in_stock,
-      badge: editingProduct.badge,
-    }).eq('id', editingProduct.id);
+    await fetch('/api/admin/products', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: editingProduct.id,
+        price: editingProduct.price,
+        in_stock: editingProduct.in_stock,
+        badge: editingProduct.badge,
+      }),
+    });
     setEditingProduct(null);
     loadProducts();
+  };
+
+  const logout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    window.location.href = '/admin';
   };
 
   const pending = orders.filter(o => o.status === 'pending').length;
@@ -88,7 +98,10 @@ export default function AdminPage() {
             <p className="text-xs text-gray-400">Tableau de bord admin</p>
           </div>
         </div>
-        <a href="/fr" className="text-xs text-gray-400 hover:text-rose-main transition-colors">← Retour au site</a>
+        <div className="flex items-center gap-4">
+          <a href="/fr" className="text-xs text-gray-400 hover:text-rose-main transition-colors">← Retour au site</a>
+          <button onClick={logout} className="text-xs text-gray-400 hover:text-rose-main transition-colors">Déconnexion</button>
+        </div>
       </div>
 
       {/* Tabs */}
