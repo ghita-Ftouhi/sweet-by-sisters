@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { ADMIN_COOKIE_NAME, isValidAdminSessionToken } from '@/lib/adminAuth';
 
 export async function PATCH(req: NextRequest) {
@@ -14,7 +14,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Missing id' }, { status: 400 });
   }
 
-  const { error } = await supabaseAdmin
+  const { error } = await getSupabaseAdmin()
     .from('products')
     .update({ price, in_stock, badge })
     .eq('id', id);
