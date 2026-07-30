@@ -176,10 +176,12 @@ function BoxBuilder({ pack, products, onClose }: { pack: Pack; products: Product
   );
 }
 
-function WeightBoxCard({ product, referenceGrams, minGrams, maxGrams, step }: {
-  product: Product; referenceGrams: number; minGrams: number; maxGrams: number; step: number;
+function WeightBoxCard({ product, title, referenceGrams, minGrams, maxGrams, step }: {
+  product: Product; title: { en: string; fr: string; ar: string };
+  referenceGrams: number; minGrams: number; maxGrams: number; step: number;
 }) {
   const locale = useLocale();
+  const displayTitle = locale === 'ar' ? title.ar : locale === 'fr' ? title.fr : title.en;
   const router = useRouter();
   const { addItem } = useCart();
   const [grams, setGrams] = useState(minGrams);
@@ -202,7 +204,7 @@ function WeightBoxCard({ product, referenceGrams, minGrams, maxGrams, step }: {
   return (
     <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 p-7 flex flex-col items-center text-center">
       <div className="text-5xl mb-4">{product.emoji}</div>
-      <h3 className="font-display text-xl font-bold text-plum mb-1">{getProductName(product, locale)}</h3>
+      <h3 className="font-display text-xl font-bold text-plum mb-1">{displayTitle}</h3>
       <p className="text-gray-400 text-sm mb-6">{getProductDesc(product, locale)}</p>
 
       <div className="flex items-center justify-center gap-4 mb-2">
@@ -272,10 +274,14 @@ export default function PacksClient({ products, packs }: { products: Product[]; 
             <p className="text-gray-400 text-center mb-10">Choisissez votre grammage</p>
             <div className="grid sm:grid-cols-2 gap-6">
               {cookieFries && (
-                <WeightBoxCard product={cookieFries} referenceGrams={200} minGrams={200} maxGrams={2000} step={100} />
+                <WeightBoxCard product={cookieFries}
+                  title={{ en: "Fries Party Box", fr: "Frites Party Box", ar: "بوكس فرايز الحفلة" }}
+                  referenceGrams={200} minGrams={200} maxGrams={2000} step={100} />
               )}
               {cookiePops && (
-                <WeightBoxCard product={cookiePops} referenceGrams={500} minGrams={500} maxGrams={2000} step={100} />
+                <WeightBoxCard product={cookiePops}
+                  title={{ en: "Pop's Party Box", fr: "Pop's Party Box", ar: "بوكس بوبس الحفلة" }}
+                  referenceGrams={500} minGrams={500} maxGrams={2000} step={100} />
               )}
             </div>
           </div>
