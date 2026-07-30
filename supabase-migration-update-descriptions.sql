@@ -14,9 +14,9 @@ update products set
 where id = '2'; -- Noisette & Kinder Bueno
 
 update products set
-  desc_en = 'Velvety red praline cookie with a gooey marshmallow center and cream cheese frosting.',
-  desc_fr = 'Cookie rouge velouté au praliné, avec cœur fondant de marshmallow et glaçage au fromage frais.',
-  desc_ar = 'كوكيز ريد فيلفيت بالبراليني، بقلب مارشميلو ذائب وطلاء جبن الكريم.'
+  desc_en = 'Velvety red praline cookie with a gooey marshmallow center and white chocolate.',
+  desc_fr = 'Cookie rouge velouté au praliné, avec cœur fondant de marshmallow et chocolat blanc.',
+  desc_ar = 'كوكيز ريد فيلفيت بالبراليني، بقلب مارشميلو ذائب وشوكولاتة بيضاء.'
 where id = '3'; -- Red Velvet Praliné & Marshmallow
 
 update products set
