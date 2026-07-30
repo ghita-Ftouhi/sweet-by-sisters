@@ -117,7 +117,7 @@ insert into packs (id, emoji, name_en, name_fr, name_ar, desc_en, desc_fr, desc_
  'Perfect for trying our flavors. 6 cookies of your choice.',
  'Parfait pour découvrir nos saveurs. 6 cookies de votre choix.',
  'مثالي لتجربة نكهاتنا. 6 كوكيز من اختيارك.',
- 6, 120, 132, 'Populaire', 'bg-rose-main', true, 1),
+ 6, 126, 132, 'Populaire', 'bg-rose-main', true, 1),
 ('pack-12', '💝', 'Gourmet Box', 'Box Gourmande', 'صندوق الذواقة',
  'The perfect gift box. 12 cookies of your choice.',
  'La boîte cadeau parfaite. 12 cookies de votre choix.',
@@ -127,7 +127,7 @@ insert into packs (id, emoji, name_en, name_fr, name_ar, desc_en, desc_fr, desc_
  'Made to share! 18 cookies of your choice.',
  'Fait pour partager ! 18 cookies de votre choix.',
  'صُنع للمشاركة! 18 كوكيز من اختيارك.',
- 18, 360, 396, 'Meilleure valeur', 'bg-plum', false, 3)
+ 18, 342, 396, 'Meilleure valeur', 'bg-plum', false, 3)
 on conflict (id) do nothing;
 
 -- =============================================
