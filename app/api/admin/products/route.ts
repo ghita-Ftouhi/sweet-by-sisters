@@ -14,14 +14,19 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Missing id' }, { status: 400 });
   }
 
-  const { error } = await getSupabaseAdmin()
-    .from('products')
-    .update({ price, in_stock, badge })
-    .eq('id', id);
+  try {
+    const { error } = await getSupabaseAdmin()
+      .from('products')
+      .update({ price, in_stock, badge })
+      .eq('id', id);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  return NextResponse.json({ ok: true });
 }
