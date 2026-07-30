@@ -1,12 +1,25 @@
 'use client';
 import { useState } from 'react';
 import { useLocale } from 'next-intl';
+import Image from 'next/image';
 import { Pack, getPackName, getPackDesc } from '@/lib/packs';
 import { Product, getProductName } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 
 type Selection = Record<string, number>;
+
+function ProductThumb({ product, size }: { product: Product; size: string }) {
+  return (
+    <div className={`${size} bg-rose-blush rounded-xl flex items-center justify-center text-2xl flex-shrink-0 relative overflow-hidden`}>
+      {product.images && product.images.length > 0 ? (
+        <Image src={product.images[0]} alt={product.emoji} fill className="object-cover" />
+      ) : (
+        product.emoji
+      )}
+    </div>
+  );
+}
 
 function PackCard({ pack, onSelect }: { pack: Pack; onSelect: (pack: Pack) => void }) {
   const locale = useLocale();
@@ -122,9 +135,7 @@ function BoxBuilder({ pack, products, onClose }: { pack: Pack; products: Product
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
           {availableProducts.map(p => (
             <div key={p.id} className="flex items-center gap-3 bg-gray-50 rounded-2xl p-3">
-              <div className="w-12 h-12 bg-rose-blush rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                {p.emoji}
-              </div>
+              <ProductThumb product={p} size="w-12 h-12" />
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-plum text-sm">{getProductName(p, locale)}</p>
                 <p className="text-xs text-gray-400">€{p.price.toFixed(2)} / cookie</p>
@@ -253,9 +264,7 @@ function CustomBoxBuilder({ products, packs }: { products: Product[]; packs: Pac
       <div className="grid sm:grid-cols-2 gap-3 mb-6">
         {availableProducts.map(p => (
           <div key={p.id} className="flex items-center gap-3 bg-gray-50 rounded-2xl p-3">
-            <div className="w-11 h-11 bg-rose-blush rounded-xl flex items-center justify-center text-xl flex-shrink-0">
-              {p.emoji}
-            </div>
+            <ProductThumb product={p} size="w-11 h-11" />
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-plum text-sm truncate">{getProductName(p, locale)}</p>
             </div>
