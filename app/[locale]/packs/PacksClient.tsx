@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import { Pack, getPackName, getPackDesc } from '@/lib/packs';
-import { Product, getProductName } from '@/lib/products';
+import { Product, getProductName, getProductDesc } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { formatPrice } from '@/lib/constants';
@@ -301,8 +301,64 @@ function CustomBoxBuilder({ products, packs }: { products: Product[]; packs: Pac
   );
 }
 
+function WeightBoxCard({ product, referenceGrams, minGrams, maxGrams, step }: {
+  product: Product; referenceGrams: number; minGrams: number; maxGrams: number; step: number;
+}) {
+  const locale = useLocale();
+  const router = useRouter();
+  const { addItem } = useCart();
+  const [grams, setGrams] = useState(minGrams);
+
+  const unitPrice = product.price / referenceGrams;
+  const totalPrice = unitPrice * grams;
+
+  const handleAdd = () => {
+    addItem({
+      ...product,
+      id: `${product.id}-${grams}g`,
+      nameEn: `${product.nameEn} (${grams}g)`,
+      nameFr: `${product.nameFr} (${grams}g)`,
+      nameAr: `${product.nameAr} (${grams}g)`,
+      price: Math.round(totalPrice * 100) / 100,
+    });
+    router.push(`/${locale}/cart`);
+  };
+
+  return (
+    <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 p-7 flex flex-col items-center text-center">
+      <div className="text-5xl mb-4">{product.emoji}</div>
+      <h3 className="font-display text-xl font-bold text-plum mb-1">{getProductName(product, locale)}</h3>
+      <p className="text-gray-400 text-sm mb-6">{getProductDesc(product, locale)}</p>
+
+      <div className="flex items-center justify-center gap-4 mb-2">
+        <button onClick={() => setGrams(g => Math.max(minGrams, g - step))} disabled={grams <= minGrams}
+          className="w-9 h-9 rounded-full bg-white border border-pink-200 text-rose-deep font-bold text-lg flex items-center justify-center hover:bg-rose-blush transition-colors disabled:opacity-30">
+          −
+        </button>
+        <span className="font-display text-2xl font-bold text-plum w-20">{grams}g</span>
+        <button onClick={() => setGrams(g => Math.min(maxGrams, g + step))} disabled={grams >= maxGrams}
+          className="w-9 h-9 rounded-full bg-rose-main text-white font-bold text-lg flex items-center justify-center hover:bg-rose-deep transition-colors disabled:opacity-30">
+          +
+        </button>
+      </div>
+      <p className="text-xs text-gray-400 mb-6">{minGrams}g – {maxGrams}g</p>
+
+      <div className="bg-rose-blush rounded-2xl px-6 py-3 mb-6 w-full">
+        <span className="font-display text-2xl font-bold text-rose-deep">{formatPrice(totalPrice)}</span>
+      </div>
+
+      <button onClick={handleAdd}
+        className="w-full bg-rose-main text-white py-3 rounded-full font-semibold hover:bg-rose-deep transition-all shadow-md hover:shadow-lg active:scale-95">
+        Ajouter au panier 🛒
+      </button>
+    </div>
+  );
+}
+
 export default function PacksClient({ products, packs }: { products: Product[]; packs: Pack[] }) {
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
+  const cookieFries = products.find(p => p.slug === 'cookie-fries');
+  const cookiePops = products.find(p => p.slug === 'cookie-pops');
 
   return (
     <div className="min-h-screen bg-cream pb-20">
@@ -339,6 +395,31 @@ export default function PacksClient({ products, packs }: { products: Product[]; 
       <div className="max-w-2xl mx-auto px-4">
         <CustomBoxBuilder products={products} packs={packs} />
       </div>
+
+      {(cookieFries || cookiePops) && (
+        <>
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="flex items-center gap-4 my-16">
+              <div className="flex-1 h-px bg-pink-200" />
+              <span className="text-rose-main font-semibold text-sm px-4">ou</span>
+              <div className="flex-1 h-px bg-pink-200" />
+            </div>
+          </div>
+
+          <div className="max-w-2xl mx-auto px-4">
+            <h2 className="font-display text-2xl font-bold text-plum text-center mb-2">Nos formats à emporter</h2>
+            <p className="text-gray-400 text-center mb-10">Choisissez votre grammage</p>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {cookieFries && (
+                <WeightBoxCard product={cookieFries} referenceGrams={200} minGrams={200} maxGrams={2000} step={100} />
+              )}
+              {cookiePops && (
+                <WeightBoxCard product={cookiePops} referenceGrams={500} minGrams={500} maxGrams={2000} step={100} />
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
