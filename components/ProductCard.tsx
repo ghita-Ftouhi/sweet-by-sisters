@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Product, getProductName, getProductDesc } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/constants';
 
 const badgeStyle: Record<string, string> = {
   bestseller: 'bg-gold text-white',
@@ -94,7 +95,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </p>
         <div className="flex items-center justify-between mt-4">
           <span className="text-rose-deep font-bold text-lg">
-            {t('currency')}{product.price.toFixed(2)}
+            {formatPrice(product.price)}
           </span>
 
           {!product.inStock ? (
