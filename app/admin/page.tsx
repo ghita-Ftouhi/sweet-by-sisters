@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { formatPrice } from '@/lib/constants';
 
 type Order = {
   id: string;
@@ -155,7 +156,7 @@ export default function AdminPage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-display font-bold text-rose-deep text-lg">€{Number(order.total).toFixed(2)}</p>
+                      <p className="font-display font-bold text-rose-deep text-lg">{formatPrice(Number(order.total))}</p>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${s.color}`}>{s.label}</span>
                     </div>
                   </div>
@@ -207,7 +208,7 @@ export default function AdminPage() {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-plum">{p.name_fr}</p>
                   <div className="flex items-center gap-3 mt-1">
-                    <span className="text-rose-deep font-bold">€{Number(p.price).toFixed(2)}</span>
+                    <span className="text-rose-deep font-bold">{formatPrice(Number(p.price))}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${p.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
                       {p.in_stock ? '✅ En stock' : '❌ Rupture'}
                     </span>
@@ -234,7 +235,7 @@ export default function AdminPage() {
 
                   <div className="flex flex-col gap-4">
                     <div>
-                      <label className="text-sm font-semibold text-plum mb-1 block">Prix (€)</label>
+                      <label className="text-sm font-semibold text-plum mb-1 block">Prix (MAD)</label>
                       <input type="number" step="0.5" min="0"
                         value={editingProduct.price}
                         onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })}

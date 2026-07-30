@@ -1,13 +1,12 @@
 'use client';
 import { useCart } from '@/context/CartContext';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import Link from 'next/link';
-import { MIN_COOKIES_PER_ORDER } from '@/lib/constants';
+import { MIN_COOKIES_PER_ORDER, formatPrice } from '@/lib/constants';
 
 export default function CartBar() {
   const { count, total } = useCart();
   const locale = useLocale();
-  const tp = useTranslations('products');
 
   if (count === 0) return null;
 
@@ -40,7 +39,7 @@ export default function CartBar() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs text-gray-400">{count} cookie{count > 1 ? 's' : ''} sélectionné{count > 1 ? 's' : ''}</p>
-            <p className="font-display font-bold text-rose-deep text-lg">{tp('currency')}{total.toFixed(2)}</p>
+            <p className="font-display font-bold text-rose-deep text-lg">{formatPrice(total)}</p>
           </div>
 
           {ready ? (

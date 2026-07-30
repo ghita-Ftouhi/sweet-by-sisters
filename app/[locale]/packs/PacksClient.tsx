@@ -6,6 +6,7 @@ import { Pack, getPackName, getPackDesc } from '@/lib/packs';
 import { Product, getProductName } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
+import { formatPrice } from '@/lib/constants';
 
 type Selection = Record<string, number>;
 
@@ -40,13 +41,13 @@ function PackCard({ pack, onSelect }: { pack: Pack; onSelect: (pack: Pack) => vo
         <div className="bg-rose-blush rounded-2xl p-4 mb-6 text-center">
           <p className="text-xs text-gray-400 mb-1">{pack.size} cookies</p>
           <div className="flex items-center justify-center gap-2">
-            <span className="font-display text-3xl font-bold text-rose-deep">€{pack.price}</span>
+            <span className="font-display text-3xl font-bold text-rose-deep">{formatPrice(pack.price)}</span>
             <div className="flex flex-col items-start">
-              <span className="text-xs line-through text-gray-400">€{pack.originalPrice}</span>
+              <span className="text-xs line-through text-gray-400">{formatPrice(pack.originalPrice)}</span>
               <span className="text-xs font-bold text-green-500">-{discount}%</span>
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-1">soit €{(pack.price / pack.size).toFixed(2)} / cookie</p>
+          <p className="text-xs text-gray-400 mt-1">soit {formatPrice(pack.price / pack.size)} / cookie</p>
         </div>
 
         <button onClick={() => onSelect(pack)}
@@ -138,7 +139,7 @@ function BoxBuilder({ pack, products, onClose }: { pack: Pack; products: Product
               <ProductThumb product={p} size="w-12 h-12" />
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-plum text-sm">{getProductName(p, locale)}</p>
-                <p className="text-xs text-gray-400">€{p.price.toFixed(2)} / cookie</p>
+                <p className="text-xs text-gray-400">{formatPrice(p.price)} / cookie</p>
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => change(p.id, -1)} disabled={!selection[p.id]}
@@ -158,8 +159,8 @@ function BoxBuilder({ pack, products, onClose }: { pack: Pack; products: Product
         {/* Footer */}
         <div className="p-5 border-t border-pink-100">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-sm text-gray-400">{pack.size} cookies · €{pack.price}</span>
-            <span className="font-display text-xl font-bold text-rose-deep">€{pack.price}</span>
+            <span className="text-sm text-gray-400">{pack.size} cookies · {formatPrice(pack.price)}</span>
+            <span className="font-display text-xl font-bold text-rose-deep">{formatPrice(pack.price)}</span>
           </div>
           <button onClick={handleAdd} disabled={total !== pack.size}
             className={`w-full py-3.5 rounded-full font-semibold text-base transition-all ${
@@ -241,7 +242,7 @@ function CustomBoxBuilder({ products, packs }: { products: Product[]; packs: Pac
               size === s ? 'bg-rose-main text-white border-rose-main shadow-md' : 'bg-white text-plum border-pink-200 hover:border-rose-main'
             }`}>
             {s} cookies<br />
-            <span className="font-bold text-base">€{priceForSize(s)}</span>
+            <span className="font-bold text-base">{formatPrice(priceForSize(s))}</span>
           </button>
         ))}
       </div>
@@ -284,8 +285,8 @@ function CustomBoxBuilder({ products, packs }: { products: Product[]; packs: Pac
       </div>
 
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-400">soit €{pricePerCookie.toFixed(2)} / cookie</p>
-        <p className="font-display text-2xl font-bold text-rose-deep">€{boxPrice}</p>
+        <p className="text-sm text-gray-400">soit {formatPrice(pricePerCookie)} / cookie</p>
+        <p className="font-display text-2xl font-bold text-rose-deep">{formatPrice(boxPrice)}</p>
       </div>
 
       <button onClick={handleAdd} disabled={total !== size}
