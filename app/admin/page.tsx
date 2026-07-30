@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { formatPrice } from '@/lib/constants';
+import ProductForm, { ProductFormValues } from '@/components/admin/ProductForm';
 
 type Order = {
   id: string;
@@ -13,14 +14,7 @@ type Order = {
   items: { name: string; emoji: string; price: number; quantity: number; type: string; contents?: { name: string; emoji: string; quantity: number }[] }[];
 };
 
-type Product = {
-  id: string;
-  emoji: string;
-  name_fr: string;
-  price: number;
-  in_stock: boolean;
-  badge: string | null;
-};
+type Product = ProductFormValues & { id: string };
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending:   { label: '⏳ En attente',  color: 'bg-yellow-100 text-yellow-700' },
@@ -37,8 +31,7 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [saveError, setSaveError] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [addingProduct, setAddingProduct] = useState(false);
 
   useEffect(() => {
     loadOrders();
@@ -67,33 +60,33 @@ export default function AdminPage() {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
   };
 
-  const saveProduct = async () => {
+  const saveEditedProduct = async (values: ProductFormValues) => {
     if (!editingProduct) return;
-    setSaving(true);
-    setSaveError('');
-    try {
-      const res = await fetch('/api/admin/products', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: editingProduct.id,
-          price: editingProduct.price,
-          in_stock: editingProduct.in_stock,
-          badge: editingProduct.badge,
-        }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setSaveError(data.error || `Erreur ${res.status}`);
-        return;
-      }
-      setEditingProduct(null);
-      loadProducts();
-    } catch {
-      setSaveError('Erreur de connexion');
-    } finally {
-      setSaving(false);
+    const res = await fetch('/api/admin/products', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: editingProduct.id, ...values }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `Erreur ${res.status}`);
     }
+    setEditingProduct(null);
+    loadProducts();
+  };
+
+  const createProduct = async (values: ProductFormValues) => {
+    const res = await fetch('/api/admin/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...values, sort_order: products.length + 1 }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `Erreur ${res.status}`);
+    }
+    setAddingProduct(false);
+    loadProducts();
   };
 
   const logout = async () => {
@@ -200,85 +193,53 @@ export default function AdminPage() {
         {/* PRODUCTS TAB */}
         {tab === 'products' && (
           <div className="flex flex-col gap-3">
+            <button onClick={() => setAddingProduct(true)}
+              className="self-start text-sm bg-plum text-white px-5 py-2.5 rounded-full hover:opacity-90 transition-all font-semibold mb-2">
+              + Ajouter un produit
+            </button>
+
             {products.map(p => (
               <div key={p.id} className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-rose-blush flex items-center justify-center text-2xl flex-shrink-0">
-                  {p.emoji}
+                <div className="w-12 h-12 rounded-xl bg-rose-blush flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden relative">
+                  {p.images?.[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    p.emoji
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-plum">{p.name_fr}</p>
-                  <div className="flex items-center gap-3 mt-1">
+                  <div className="flex items-center gap-3 mt-1 flex-wrap">
                     <span className="text-rose-deep font-bold">{formatPrice(Number(p.price))}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${p.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
                       {p.in_stock ? '✅ En stock' : '❌ Rupture'}
                     </span>
                     {p.badge && <span className="text-xs bg-rose-blush text-rose-deep px-2 py-0.5 rounded-full">{p.badge}</span>}
+                    {!p.box_eligible && <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Hors box</span>}
                   </div>
                 </div>
-                <button onClick={() => { setEditingProduct(p); setSaveError(''); }}
+                <button onClick={() => setEditingProduct(p)}
                   className="text-xs bg-plum text-white px-4 py-2 rounded-full hover:opacity-90 transition-all font-semibold">
                   Modifier
                 </button>
               </div>
             ))}
 
-            {/* Edit modal */}
             {editingProduct && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center px-4"
-                onClick={() => setEditingProduct(null)}>
-                <div className="absolute inset-0 bg-plum/40 backdrop-blur-sm" />
-                <div className="relative bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl"
-                  onClick={e => e.stopPropagation()}>
-                  <h2 className="font-display text-xl font-bold text-plum mb-6">
-                    {editingProduct.emoji} {editingProduct.name_fr}
-                  </h2>
+              <ProductForm
+                initial={editingProduct}
+                onCancel={() => setEditingProduct(null)}
+                onSave={saveEditedProduct}
+              />
+            )}
 
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <label className="text-sm font-semibold text-plum mb-1 block">Prix (MAD)</label>
-                      <input type="number" step="0.5" min="0"
-                        value={editingProduct.price}
-                        onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })}
-                        className="w-full border border-pink-200 rounded-xl px-4 py-2.5 text-plum font-semibold focus:outline-none focus:border-rose-main" />
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-semibold text-plum mb-1 block">Badge</label>
-                      <select value={editingProduct.badge ?? ''}
-                        onChange={e => setEditingProduct({ ...editingProduct, badge: e.target.value || null })}
-                        className="w-full border border-pink-200 rounded-xl px-4 py-2.5 text-plum focus:outline-none focus:border-rose-main">
-                        <option value="">Aucun</option>
-                        <option value="bestseller">Populaire</option>
-                        <option value="new">Nouveau</option>
-                        <option value="limited">Limité</option>
-                      </select>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
-                      <span className="font-semibold text-plum text-sm">En stock</span>
-                      <button onClick={() => setEditingProduct({ ...editingProduct, in_stock: !editingProduct.in_stock })}
-                        className={`w-12 h-6 rounded-full transition-all relative ${editingProduct.in_stock ? 'bg-green-400' : 'bg-gray-300'}`}>
-                        <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${editingProduct.in_stock ? 'left-6' : 'left-0.5'}`} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {saveError && (
-                    <p className="text-red-500 text-xs mt-4 text-center">{saveError}</p>
-                  )}
-
-                  <div className="flex gap-3 mt-6">
-                    <button onClick={() => setEditingProduct(null)}
-                      className="flex-1 py-3 rounded-full border border-pink-200 text-plum font-semibold text-sm hover:bg-gray-50 transition-all">
-                      Annuler
-                    </button>
-                    <button onClick={saveProduct} disabled={saving}
-                      className="flex-1 py-3 rounded-full bg-rose-main text-white font-semibold text-sm hover:bg-rose-deep transition-all shadow-md disabled:opacity-60">
-                      {saving ? 'Sauvegarde...' : 'Sauvegarder'}
-                    </button>
-                  </div>
-                </div>
-              </div>
+            {addingProduct && (
+              <ProductForm
+                initial={undefined}
+                onCancel={() => setAddingProduct(false)}
+                onSave={createProduct}
+              />
             )}
           </div>
         )}
