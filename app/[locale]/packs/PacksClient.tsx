@@ -64,7 +64,7 @@ function BoxBuilder({ pack, products, onClose }: { pack: Pack; products: Product
   const router = useRouter();
   const { addBox } = useCart();
   const [selection, setSelection] = useState<Selection>({});
-  const availableProducts = products.filter(p => p.inStock);
+  const availableProducts = products.filter(p => p.inStock && p.boxEligible);
 
   const total = Object.values(selection).reduce((a, b) => a + b, 0);
   const remaining = pack.size - total;
@@ -182,7 +182,7 @@ function CustomBoxBuilder({ products, packs }: { products: Product[]; packs: Pac
   const { addBox } = useCart();
   const [size, setSize] = useState<6 | 12 | 18>(6);
   const [selection, setSelection] = useState<Selection>({});
-  const availableProducts = products.filter(p => p.inStock);
+  const availableProducts = products.filter(p => p.inStock && p.boxEligible);
 
   const total = Object.values(selection).reduce((a, b) => a + b, 0);
   const remaining = size - total;

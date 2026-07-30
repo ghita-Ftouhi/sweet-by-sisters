@@ -19,6 +19,7 @@ create table if not exists products (
   in_stock    boolean not null default true,
   badge       text,
   sort_order  int default 0,
+  box_eligible boolean not null default true,
   created_at  timestamptz default now()
 );
 
@@ -107,6 +108,22 @@ insert into products (id, slug, emoji, images, name_en, name_fr, name_ar, desc_e
  'Cookie moelleux généreusement garni de M&M''s colorés pour une touche croquante et fun.',
  'كوكيز طري مليء بحبات إم أند إمز الملونة لقضمة مقرمشة ومرحة.',
  22, true, 'new', 8)
+on conflict (id) do nothing;
+
+-- Vendus au sachet/boîte (pas à l'unité) — exclus du composeur de box via box_eligible = false
+insert into products (id, slug, emoji, images, name_en, name_fr, name_ar, desc_en, desc_fr, desc_ar, price, in_stock, badge, sort_order, box_eligible) values
+('9', 'cookie-pops', '🍪', '[]',
+ 'Cookie Pops', 'Cookie Pops', 'كوكيز بوبس',
+ '500g box of soft bite-sized cookie pieces, served with chocolate dip — perfect for sharing or snacking anytime.',
+ 'Boîte de 500g de petites bouchées de cookie moelleuses, servies avec une sauce chocolat, parfaites à grignoter ou à partager.',
+ 'علبة 500 جرام من قطع الكوكيز الصغيرة الطرية، تُقدَّم مع صوص الشوكولاتة، مثالية للمشاركة أو الاستمتاع بها في أي وقت.',
+ 50, true, 'new', 9, false),
+('10', 'cookie-fries', '🍟', '[]',
+ 'Cookie Fries', 'Cookie Fries', 'كوكيز فرايز',
+ '200g bag of cookie fries, crispy outside and soft inside, served with chocolate dip.',
+ 'Sachet de 200g de cookies en forme de frites, croustillants à l''extérieur et moelleux à l''intérieur, servis avec une sauce chocolat.',
+ 'كيس 200 جرام من الكوكيز على شكل أصابع، مقرمش من الخارج وطري من الداخل، يُقدَّم مع صوص الشوكولاتة.',
+ 25, true, 'new', 10, false)
 on conflict (id) do nothing;
 
 -- =============================================
