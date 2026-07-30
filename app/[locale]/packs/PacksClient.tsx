@@ -262,7 +262,7 @@ export default function PacksClient({ products, packs }: { products: Product[]; 
       {(cookieFries || cookiePops) && (
         <>
           <div className="max-w-5xl mx-auto px-4">
-            <div className="flex items-center gap-4 my-16">
+            <div className="flex items-center gap-4 my-4">
               <div className="flex-1 h-px bg-pink-200" />
               <span className="text-rose-main font-semibold text-sm px-4">ou</span>
               <div className="flex-1 h-px bg-pink-200" />
