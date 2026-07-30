@@ -4,7 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { getProductName } from '@/lib/products';
 import Link from 'next/link';
 import { useState } from 'react';
-import { MIN_COOKIES_PER_ORDER, WHATSAPP_NUMBER, formatPrice } from '@/lib/constants';
+import { MIN_COOKIES_PER_ORDER, WHATSAPP_NUMBER, CARD_PAYMENT_ENABLED, formatPrice } from '@/lib/constants';
 
 async function saveOrderToDB(orderItems: unknown[], boxes: unknown[], total: number, paymentMethod: 'card' | 'whatsapp', locale: string) {
   try {
@@ -178,24 +178,28 @@ export default function CartPage() {
 
               {ready ? (
                 <div className="flex flex-col gap-3">
-                  <button onClick={handleCheckout} disabled={loading}
-                    className="w-full py-4 rounded-full font-semibold text-lg transition-all flex items-center justify-center gap-2 bg-rose-main text-white hover:bg-rose-deep shadow-md hover:shadow-lg active:scale-95 cursor-pointer disabled:opacity-60">
-                    {loading ? (
-                      <>
-                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                        </svg>
-                        Redirection...
-                      </>
-                    ) : <>💳 Payer par carte</>}
-                  </button>
+                  {CARD_PAYMENT_ENABLED && (
+                    <>
+                      <button onClick={handleCheckout} disabled={loading}
+                        className="w-full py-4 rounded-full font-semibold text-lg transition-all flex items-center justify-center gap-2 bg-rose-main text-white hover:bg-rose-deep shadow-md hover:shadow-lg active:scale-95 cursor-pointer disabled:opacity-60">
+                        {loading ? (
+                          <>
+                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                            </svg>
+                            Redirection...
+                          </>
+                        ) : <>💳 Payer par carte</>}
+                      </button>
 
-                  <div className="flex items-center gap-3 text-gray-300 text-sm">
-                    <div className="flex-1 h-px bg-gray-100" />
-                    <span>ou</span>
-                    <div className="flex-1 h-px bg-gray-100" />
-                  </div>
+                      <div className="flex items-center gap-3 text-gray-300 text-sm">
+                        <div className="flex-1 h-px bg-gray-100" />
+                        <span>ou</span>
+                        <div className="flex-1 h-px bg-gray-100" />
+                      </div>
+                    </>
+                  )}
 
                   <a href={buildWhatsAppUrl(
                       items.map(({ product, quantity }) => ({ name: getProductName(product, locale), price: product.price, quantity, emoji: product.emoji })),
@@ -212,7 +216,9 @@ export default function CartPage() {
                   </a>
 
                   <p className="text-center text-xs text-gray-400">
-                    🔒 Carte sécurisée par Stripe · 💬 WhatsApp pour paiement à la livraison
+                    {CARD_PAYMENT_ENABLED
+                      ? '🔒 Carte sécurisée par Stripe · 💬 WhatsApp pour paiement à la livraison'
+                      : '💬 Paiement à la livraison via WhatsApp'}
                   </p>
                 </div>
               ) : (
