@@ -54,8 +54,8 @@ const socials = [
   },
   {
     label: 'Email',
-    handle: 'cotact.sweetbysisters\n@gmail.com',
-    href: 'mailto:cotact.sweetbysisters@gmail.com',
+    handle: 'contact.sweetbysisters\n@gmail.com',
+    href: 'mailto:contact.sweetbysisters@gmail.com',
     gradient: 'from-rose-400 to-pink-600',
     shadow: 'shadow-rose-200',
     icon: (
