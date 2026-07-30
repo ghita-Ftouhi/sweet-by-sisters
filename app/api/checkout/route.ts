@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
     const line_items = items.map((item: { name: string; price: number; quantity: number; emoji: string }) => ({
       price_data: {
-        currency: 'eur',
+        currency: 'mad',
         product_data: {
           name: `${item.emoji} ${item.name}`,
         },

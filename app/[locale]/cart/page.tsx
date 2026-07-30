@@ -4,7 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { getProductName } from '@/lib/products';
 import Link from 'next/link';
 import { useState } from 'react';
-import { MIN_COOKIES_PER_ORDER, WHATSAPP_NUMBER } from '@/lib/constants';
+import { MIN_COOKIES_PER_ORDER, WHATSAPP_NUMBER, formatPrice } from '@/lib/constants';
 
 async function saveOrderToDB(orderItems: unknown[], boxes: unknown[], total: number, paymentMethod: 'card' | 'whatsapp', locale: string) {
   try {
@@ -21,19 +21,18 @@ function buildWhatsAppUrl(
   boxes: { packName: string; emoji: string; price: number; size: number; contents: { name: string; emoji: string; quantity: number }[] }[],
   total: number
 ) {
-  const itemLines = items.map(i => `🍪 ${i.name} x${i.quantity} — €${(i.price * i.quantity).toFixed(2)}`);
+  const itemLines = items.map(i => `🍪 ${i.name} x${i.quantity} — ${formatPrice(i.price * i.quantity)}`);
   const boxLines = boxes.map(b => {
     const contents = b.contents.map(c => `    🍪 ${c.name} x${c.quantity}`).join('\n');
-    return `🍪 ${b.packName} (${b.size} cookies) — €${b.price.toFixed(2)}\n${contents}`;
+    return `🍪 ${b.packName} (${b.size} cookies) — ${formatPrice(b.price)}\n${contents}`;
   });
   const allLines = [...itemLines, ...boxLines].join('\n');
-  const message = `🍪 *Nouvelle commande Sweets by Sisters* 🍪\n\n${allLines}\n\n*Total : €${total.toFixed(2)}*\n\n🍪 Merci pour votre commande ! 💕`;
+  const message = `🍪 *Nouvelle commande Sweets by Sisters* 🍪\n\n${allLines}\n\n*Total : ${formatPrice(total)}*\n\n🍪 Merci pour votre commande ! 💕`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
 export default function CartPage() {
   const t = useTranslations('cart');
-  const tp = useTranslations('products');
   const locale = useLocale();
   const { items, boxes, removeItem, updateQty, removeBox, total, count } = useCart();
   const [loading, setLoading] = useState(false);
@@ -112,7 +111,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-plum truncate">{getProductName(product, locale)}</p>
-                  <p className="text-rose-deep font-bold">{tp('currency')}{product.price.toFixed(2)}</p>
+                  <p className="text-rose-deep font-bold">{formatPrice(product.price)}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => updateQty(product.id, quantity - 1)}
@@ -141,7 +140,7 @@ export default function CartPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-plum">{box.packName}</p>
-                    <p className="text-rose-deep font-bold">€{box.price.toFixed(2)}</p>
+                    <p className="text-rose-deep font-bold">{formatPrice(box.price)}</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {box.contents.map(c => (
                         <span key={c.productId} className="bg-rose-blush text-plum text-xs px-2 py-0.5 rounded-full font-medium">
@@ -163,7 +162,7 @@ export default function CartPage() {
               <div className="flex justify-between items-center mb-6">
                 <span className="font-display text-xl font-bold text-plum">{t('total')}</span>
                 <span className="font-display text-2xl font-bold text-rose-deep">
-                  {tp('currency')}{total.toFixed(2)}
+                  {formatPrice(total)}
                 </span>
               </div>
 
