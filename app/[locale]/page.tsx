@@ -1,8 +1,8 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import ProductCard from '@/components/ProductCard';
-import { products } from '@/lib/products';
+import { fetchProducts } from '@/lib/db';
 
 function HeroSection() {
   const t = useTranslations('hero');
@@ -65,8 +65,9 @@ async function CTALink({ href, label, primary }: { href: string; label: string; 
   );
 }
 
-function FeaturedSection() {
-  const t = useTranslations('featured');
+async function FeaturedSection() {
+  const t = await getTranslations('featured');
+  const products = await fetchProducts();
   const featured = products.filter(p => p.badge === 'bestseller' || p.badge === 'new').slice(0, 3);
   return (
     <section className="max-w-6xl mx-auto px-4 py-20">

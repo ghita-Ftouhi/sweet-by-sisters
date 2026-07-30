@@ -2,8 +2,7 @@
 import { useCart } from '@/context/CartContext';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
-
-const MIN_COOKIES = 4;
+import { MIN_COOKIES_PER_ORDER } from '@/lib/constants';
 
 export default function CartBar() {
   const { count, total } = useCart();
@@ -12,9 +11,9 @@ export default function CartBar() {
 
   if (count === 0) return null;
 
-  const remaining = Math.max(0, MIN_COOKIES - count);
-  const ready = count >= MIN_COOKIES;
-  const progress = Math.min(100, (count / MIN_COOKIES) * 100);
+  const remaining = Math.max(0, MIN_COOKIES_PER_ORDER - count);
+  const ready = count >= MIN_COOKIES_PER_ORDER;
+  const progress = Math.min(100, (count / MIN_COOKIES_PER_ORDER) * 100);
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-4 pointer-events-none">
@@ -27,7 +26,7 @@ export default function CartBar() {
                 ? '✅ Minimum atteint !'
                 : `🍪 Encore ${remaining} cookie${remaining > 1 ? 's' : ''} pour commander`}
             </span>
-            <span className="text-rose-main">{count} / {MIN_COOKIES} min</span>
+            <span className="text-rose-main">{count} / {MIN_COOKIES_PER_ORDER} min</span>
           </div>
           <div className="h-2 bg-pink-100 rounded-full overflow-hidden">
             <div
@@ -52,7 +51,7 @@ export default function CartBar() {
           ) : (
             <button disabled
               className="bg-gray-200 text-gray-400 px-6 py-3 rounded-full font-semibold text-sm cursor-not-allowed">
-              Minimum {MIN_COOKIES} cookies
+              Minimum {MIN_COOKIES_PER_ORDER} cookies
             </button>
           )}
         </div>

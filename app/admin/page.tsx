@@ -36,6 +36,8 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [saveError, setSaveError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     loadOrders();
@@ -66,13 +68,36 @@ export default function AdminPage() {
 
   const saveProduct = async () => {
     if (!editingProduct) return;
-    await supabase.from('products').update({
-      price: editingProduct.price,
-      in_stock: editingProduct.in_stock,
-      badge: editingProduct.badge,
-    }).eq('id', editingProduct.id);
-    setEditingProduct(null);
-    loadProducts();
+    setSaving(true);
+    setSaveError('');
+    try {
+      const res = await fetch('/api/admin/products', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingProduct.id,
+          price: editingProduct.price,
+          in_stock: editingProduct.in_stock,
+          badge: editingProduct.badge,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setSaveError(data.error || `Erreur ${res.status}`);
+        return;
+      }
+      setEditingProduct(null);
+      loadProducts();
+    } catch {
+      setSaveError('Erreur de connexion');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const logout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    window.location.href = '/admin';
   };
 
   const pending = orders.filter(o => o.status === 'pending').length;
@@ -88,7 +113,10 @@ export default function AdminPage() {
             <p className="text-xs text-gray-400">Tableau de bord admin</p>
           </div>
         </div>
-        <a href="/fr" className="text-xs text-gray-400 hover:text-rose-main transition-colors">← Retour au site</a>
+        <div className="flex items-center gap-4">
+          <a href="/fr" className="text-xs text-gray-400 hover:text-rose-main transition-colors">← Retour au site</a>
+          <button onClick={logout} className="text-xs text-gray-400 hover:text-rose-main transition-colors">Déconnexion</button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -186,7 +214,7 @@ export default function AdminPage() {
                     {p.badge && <span className="text-xs bg-rose-blush text-rose-deep px-2 py-0.5 rounded-full">{p.badge}</span>}
                   </div>
                 </div>
-                <button onClick={() => setEditingProduct(p)}
+                <button onClick={() => { setEditingProduct(p); setSaveError(''); }}
                   className="text-xs bg-plum text-white px-4 py-2 rounded-full hover:opacity-90 transition-all font-semibold">
                   Modifier
                 </button>
@@ -234,14 +262,18 @@ export default function AdminPage() {
                     </div>
                   </div>
 
+                  {saveError && (
+                    <p className="text-red-500 text-xs mt-4 text-center">{saveError}</p>
+                  )}
+
                   <div className="flex gap-3 mt-6">
                     <button onClick={() => setEditingProduct(null)}
                       className="flex-1 py-3 rounded-full border border-pink-200 text-plum font-semibold text-sm hover:bg-gray-50 transition-all">
                       Annuler
                     </button>
-                    <button onClick={saveProduct}
-                      className="flex-1 py-3 rounded-full bg-rose-main text-white font-semibold text-sm hover:bg-rose-deep transition-all shadow-md">
-                      Sauvegarder
+                    <button onClick={saveProduct} disabled={saving}
+                      className="flex-1 py-3 rounded-full bg-rose-main text-white font-semibold text-sm hover:bg-rose-deep transition-all shadow-md disabled:opacity-60">
+                      {saving ? 'Sauvegarde...' : 'Sauvegarder'}
                     </button>
                   </div>
                 </div>

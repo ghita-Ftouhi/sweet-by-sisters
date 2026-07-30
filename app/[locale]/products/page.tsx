@@ -1,10 +1,11 @@
-import { useTranslations } from 'next-intl';
-import { products } from '@/lib/products';
+import { getTranslations } from 'next-intl/server';
+import { fetchProducts } from '@/lib/db';
 import ProductCard from '@/components/ProductCard';
 import CartBar from '@/components/CartBar';
 
-export default function ProductsPage() {
-  const t = useTranslations('products');
+export default async function ProductsPage() {
+  const t = await getTranslations('products');
+  const products = await fetchProducts();
 
   return (
     <div className="min-h-screen pb-32">
