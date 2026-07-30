@@ -66,13 +66,13 @@ insert into products (id, slug, emoji, images, name_en, name_fr, name_ar, desc_e
  'شوكولاتة داكنة وحليب وبيضاء في كوكيز لا يُقاوم.',
  20, true, 'bestseller', 1),
 ('2', 'kinder-bueno', '🤎', '["/kinder-ext.jpg","/kinder-int.jpg"]',
- 'Kinder Bueno', 'Cookie Kinder Bueno', 'كوكيز كيندر بوينو',
+ 'Hazelnut & Kinder Bueno', 'Cookie Noisette & Kinder Bueno', 'كوكيز البندق وكيندر بوينو',
  'Soft cookie filled with authentic Kinder Bueno cream, topped with crunchy hazelnuts and Bueno pieces.',
  'Cookie moelleux fourré à la vraie crème de Kinder Bueno, garni de noisettes croquantes et morceaux de Bueno.',
  'كوكيز طري محشو بكريمة كيندر بوينو الأصلية مع البندق المقرمش وقطع البوينو.',
  22, true, 'new', 2),
 ('3', 'red-velvet', '❤️', '["/redvelvet-ext.jpg","/redvelvet-int.jpg"]',
- 'Red Velvet', 'Cookie Red Velvet', 'كوكيز ريد فيلفيت',
+ 'Red Velvet Praline & Marshmallow', 'Cookie Red Velvet Praliné & Marshmallow', 'كوكيز ريد فيلفيت براليني ومارشميلو',
  'Velvety red cookie with a gooey marshmallow center and cream cheese frosting.',
  'Cookie rouge velouté avec cœur fondant de marshmallow et glaçage au fromage frais.',
  'كوكيز مخملي أحمر بقلب مارشميلو ذائب وطلاء جبن الكريم.',
@@ -90,7 +90,7 @@ insert into products (id, slug, emoji, images, name_en, name_fr, name_ar, desc_e
  'كوكيز براليني اللوز مع المكسرات المكرملة.',
  22, true, null, 5),
 ('6', 'lotus', '🌺', '["/lotus-ext.jpg","/lotus-int.jpg"]',
- 'Lotus Biscoff', 'Cookie Lotus', 'كوكيز لوتس',
+ 'Hazelnut & Biscoff', 'Cookie Noisette & Biscoff', 'كوكيز البندق وبسكوف',
  'Cookie loaded with Lotus Biscoff spread and caramelized biscuit pieces.',
  'Cookie généreusement garni de pâte Lotus et morceaux de biscuits caramélisés.',
  'كوكيز محشو بكريمة لوتس وقطع البسكويت المكرمل.',
@@ -117,7 +117,7 @@ insert into packs (id, emoji, name_en, name_fr, name_ar, desc_en, desc_fr, desc_
  'Perfect for trying our flavors. 6 cookies of your choice.',
  'Parfait pour découvrir nos saveurs. 6 cookies de votre choix.',
  'مثالي لتجربة نكهاتنا. 6 كوكيز من اختيارك.',
- 6, 120, 132, 'Populaire', 'bg-rose-main', true, 1),
+ 6, 126, 132, 'Populaire', 'bg-rose-main', true, 1),
 ('pack-12', '💝', 'Gourmet Box', 'Box Gourmande', 'صندوق الذواقة',
  'The perfect gift box. 12 cookies of your choice.',
  'La boîte cadeau parfaite. 12 cookies de votre choix.',
@@ -127,7 +127,7 @@ insert into packs (id, emoji, name_en, name_fr, name_ar, desc_en, desc_fr, desc_
  'Made to share! 18 cookies of your choice.',
  'Fait pour partager ! 18 cookies de votre choix.',
  'صُنع للمشاركة! 18 كوكيز من اختيارك.',
- 18, 360, 396, 'Meilleure valeur', 'bg-plum', false, 3)
+ 18, 342, 396, 'Meilleure valeur', 'bg-plum', false, 3)
 on conflict (id) do nothing;
 
 -- =============================================
