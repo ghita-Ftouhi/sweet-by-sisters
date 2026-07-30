@@ -17,6 +17,7 @@ function rowToProduct(r: Record<string, unknown>): Product {
     price: Number(r.price),
     inStock: r.in_stock as boolean,
     badge: r.badge as Product['badge'],
+    boxEligible: r.box_eligible !== false,
   };
 }
 

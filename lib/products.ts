@@ -12,6 +12,7 @@ export interface Product {
   price: number;
   inStock: boolean;
   badge?: 'new' | 'bestseller' | 'limited';
+  boxEligible: boolean;
 }
 
 export function getProductName(p: Product, locale: string) {

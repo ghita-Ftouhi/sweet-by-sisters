@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import { Pack, getPackName, getPackDesc } from '@/lib/packs';
-import { Product, getProductName } from '@/lib/products';
+import { Product, getProductName, getProductDesc } from '@/lib/products';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { formatPrice } from '@/lib/constants';
@@ -64,7 +64,7 @@ function BoxBuilder({ pack, products, onClose }: { pack: Pack; products: Product
   const router = useRouter();
   const { addBox } = useCart();
   const [selection, setSelection] = useState<Selection>({});
-  const availableProducts = products.filter(p => p.inStock);
+  const availableProducts = products.filter(p => p.inStock && p.boxEligible);
 
   const total = Object.values(selection).reduce((a, b) => a + b, 0);
   const remaining = pack.size - total;
@@ -176,126 +176,57 @@ function BoxBuilder({ pack, products, onClose }: { pack: Pack; products: Product
   );
 }
 
-function CustomBoxBuilder({ products, packs }: { products: Product[]; packs: Pack[] }) {
+function WeightBoxCard({ product, title, referenceGrams, minGrams, maxGrams, step }: {
+  product: Product; title: { en: string; fr: string; ar: string };
+  referenceGrams: number; minGrams: number; maxGrams: number; step: number;
+}) {
   const locale = useLocale();
+  const displayTitle = locale === 'ar' ? title.ar : locale === 'fr' ? title.fr : title.en;
   const router = useRouter();
-  const { addBox } = useCart();
-  const [size, setSize] = useState<6 | 12 | 18>(6);
-  const [selection, setSelection] = useState<Selection>({});
-  const availableProducts = products.filter(p => p.inStock);
+  const { addItem } = useCart();
+  const [grams, setGrams] = useState(minGrams);
 
-  const total = Object.values(selection).reduce((a, b) => a + b, 0);
-  const remaining = size - total;
-
-  const priceForSize = (s: number) => packs.find(p => p.size === s)?.price ?? 0;
-  const boxPrice = priceForSize(size);
-  const pricePerCookie = boxPrice / size;
-
-  const change = (id: string, delta: number) => {
-    setSelection(prev => {
-      const current = prev[id] ?? 0;
-      const next = Math.max(0, current + delta);
-      if (delta > 0 && total >= size) return prev;
-      if (next === 0) {
-        const { [id]: _, ...rest } = prev;
-        return rest;
-      }
-      return { ...prev, [id]: next };
-    });
-  };
-
-  const handleSizeChange = (s: 6 | 12 | 18) => {
-    setSize(s);
-    setSelection({});
-  };
+  const unitPrice = product.price / referenceGrams;
+  const totalPrice = unitPrice * grams;
 
   const handleAdd = () => {
-    if (total !== size) return;
-    const contents = Object.entries(selection).map(([productId, qty]) => {
-      const p = products.find(x => x.id === productId)!;
-      return { productId, name: getProductName(p, locale), emoji: p.emoji, quantity: qty };
-    });
-    addBox({
-      packId: 'custom',
-      packName: `Ma Box Personnalisée (${size})`,
-      emoji: '✨',
-      price: boxPrice,
-      size,
-      contents,
+    addItem({
+      ...product,
+      id: `${product.id}-${grams}g`,
+      nameEn: `${product.nameEn} (${grams}g)`,
+      nameFr: `${product.nameFr} (${grams}g)`,
+      nameAr: `${product.nameAr} (${grams}g)`,
+      price: Math.round(totalPrice * 100) / 100,
     });
     router.push(`/${locale}/cart`);
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm p-8">
-      <div className="text-center mb-8">
-        <div className="text-4xl mb-3">✨</div>
-        <h2 className="font-display text-2xl font-bold text-plum mb-2">Compose ta Box</h2>
-        <p className="text-gray-400">Tu choisis les saveurs, on s'occupe du reste !</p>
+    <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 p-7 flex flex-col items-center text-center">
+      <div className="text-5xl mb-4">{product.emoji}</div>
+      <h3 className="font-display text-xl font-bold text-plum mb-1">{displayTitle}</h3>
+      <p className="text-gray-400 text-sm mb-6">{getProductDesc(product, locale)}</p>
+
+      <div className="flex items-center justify-center gap-4 mb-2">
+        <button onClick={() => setGrams(g => Math.max(minGrams, g - step))} disabled={grams <= minGrams}
+          className="w-9 h-9 rounded-full bg-white border border-pink-200 text-rose-deep font-bold text-lg flex items-center justify-center hover:bg-rose-blush transition-colors disabled:opacity-30">
+          −
+        </button>
+        <span className="font-display text-2xl font-bold text-plum w-20">{grams}g</span>
+        <button onClick={() => setGrams(g => Math.min(maxGrams, g + step))} disabled={grams >= maxGrams}
+          className="w-9 h-9 rounded-full bg-rose-main text-white font-bold text-lg flex items-center justify-center hover:bg-rose-deep transition-colors disabled:opacity-30">
+          +
+        </button>
+      </div>
+      <p className="text-xs text-gray-400 mb-6">{minGrams}g – {maxGrams}g</p>
+
+      <div className="bg-rose-blush rounded-2xl px-6 py-3 mb-6 w-full">
+        <span className="font-display text-2xl font-bold text-rose-deep">{formatPrice(totalPrice)}</span>
       </div>
 
-      {/* Size selector */}
-      <div className="flex gap-3 mb-8">
-        {([6, 12, 18] as const).map(s => (
-          <button key={s} onClick={() => handleSizeChange(s)}
-            className={`flex-1 py-3 rounded-2xl font-semibold text-sm transition-all border-2 ${
-              size === s ? 'bg-rose-main text-white border-rose-main shadow-md' : 'bg-white text-plum border-pink-200 hover:border-rose-main'
-            }`}>
-            {s} cookies<br />
-            <span className="font-bold text-base">{formatPrice(priceForSize(s))}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Progress */}
-      <div className="bg-rose-blush/40 rounded-2xl p-4 mb-6">
-        <div className="flex justify-between text-sm font-semibold mb-1.5">
-          <span className="text-plum">
-            {remaining > 0 ? `Encore ${remaining} cookie${remaining > 1 ? 's' : ''} à choisir` : '✅ Box complète !'}
-          </span>
-          <span className="text-rose-main">{total} / {size}</span>
-        </div>
-        <div className="h-2 bg-white rounded-full overflow-hidden">
-          <div className={`h-full rounded-full transition-all duration-300 ${total === size ? 'bg-green-400' : 'bg-rose-main'}`}
-            style={{ width: `${(total / size) * 100}%` }} />
-        </div>
-      </div>
-
-      {/* Cookies */}
-      <div className="grid sm:grid-cols-2 gap-3 mb-6">
-        {availableProducts.map(p => (
-          <div key={p.id} className="flex items-center gap-3 bg-gray-50 rounded-2xl p-3">
-            <ProductThumb product={p} size="w-11 h-11" />
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-plum text-sm truncate">{getProductName(p, locale)}</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button onClick={() => change(p.id, -1)} disabled={!selection[p.id]}
-                className="w-7 h-7 rounded-full bg-white border border-pink-200 text-rose-deep font-bold flex items-center justify-center hover:bg-rose-blush transition-colors disabled:opacity-30">
-                −
-              </button>
-              <span className="w-5 text-center font-bold text-plum text-sm">{selection[p.id] ?? 0}</span>
-              <button onClick={() => change(p.id, 1)} disabled={total >= size}
-                className="w-7 h-7 rounded-full bg-rose-main text-white font-bold flex items-center justify-center hover:bg-rose-deep transition-colors disabled:opacity-30">
-                +
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-400">soit {formatPrice(pricePerCookie)} / cookie</p>
-        <p className="font-display text-2xl font-bold text-rose-deep">{formatPrice(boxPrice)}</p>
-      </div>
-
-      <button onClick={handleAdd} disabled={total !== size}
-        className={`w-full py-4 rounded-full font-semibold text-lg transition-all ${
-          total === size
-            ? 'bg-rose-main text-white hover:bg-rose-deep shadow-md active:scale-95 cursor-pointer'
-            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-        }`}>
-        {total === size ? 'Ajouter ma box au panier 🛒' : `Il manque ${remaining} cookie${remaining > 1 ? 's' : ''}`}
+      <button onClick={handleAdd}
+        className="w-full bg-rose-main text-white py-3 rounded-full font-semibold hover:bg-rose-deep transition-all shadow-md hover:shadow-lg active:scale-95">
+        Ajouter au panier 🛒
       </button>
     </div>
   );
@@ -303,6 +234,8 @@ function CustomBoxBuilder({ products, packs }: { products: Product[]; packs: Pac
 
 export default function PacksClient({ products, packs }: { products: Product[]; packs: Pack[] }) {
   const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
+  const cookieFries = products.find(p => p.slug === 'cookie-fries');
+  const cookiePops = products.find(p => p.slug === 'cookie-pops');
 
   return (
     <div className="min-h-screen bg-cream pb-20">
@@ -326,19 +259,34 @@ export default function PacksClient({ products, packs }: { products: Product[]; 
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="flex items-center gap-4 mb-16">
-          <div className="flex-1 h-px bg-pink-200" />
-          <span className="text-rose-main font-semibold text-sm px-4">ou</span>
-          <div className="flex-1 h-px bg-pink-200" />
-        </div>
-      </div>
+      {(cookieFries || cookiePops) && (
+        <>
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="flex items-center gap-4 my-4">
+              <div className="flex-1 h-px bg-pink-200" />
+              <span className="text-rose-main font-semibold text-sm px-4">ou</span>
+              <div className="flex-1 h-px bg-pink-200" />
+            </div>
+          </div>
 
-      {/* Custom builder */}
-      <div className="max-w-2xl mx-auto px-4">
-        <CustomBoxBuilder products={products} packs={packs} />
-      </div>
+          <div className="max-w-2xl mx-auto px-4">
+            <h2 className="font-display text-2xl font-bold text-plum text-center mb-2">Nos formats à emporter</h2>
+            <p className="text-gray-400 text-center mb-10">Choisissez votre grammage</p>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {cookieFries && (
+                <WeightBoxCard product={cookieFries}
+                  title={{ en: "Fries Party Box", fr: "Frites Party Box", ar: "بوكس فرايز الحفلة" }}
+                  referenceGrams={200} minGrams={200} maxGrams={2000} step={100} />
+              )}
+              {cookiePops && (
+                <WeightBoxCard product={cookiePops}
+                  title={{ en: "Pop's Party Box", fr: "Pop's Party Box", ar: "بوكس بوبس الحفلة" }}
+                  referenceGrams={500} minGrams={500} maxGrams={2000} step={100} />
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
