@@ -100,7 +100,13 @@ insert into products (id, slug, emoji, images, name_en, name_fr, name_ar, desc_e
  'Gooey Nutella-filled cookie with crunchy walnut pieces.',
  'Cookie fondant fourré au Nutella avec des éclats de noix croquants.',
  'كوكيز طري محشو بالنوتيلا مع قطع الجوز المقرمشة.',
- 20, true, 'new', 7)
+ 20, true, 'new', 7),
+('8', 'mms-cookie', '🍬', '["/mm-ext.jpg","/mm-int.jpg"]',
+ 'M&M''s Cookie', 'Cookie M&M''s', 'كوكيز إم أند إمز',
+ 'Soft cookie loaded with colorful M&M''s for a fun, crunchy bite.',
+ 'Cookie moelleux généreusement garni de M&M''s colorés pour une touche croquante et fun.',
+ 'كوكيز طري مليء بحبات إم أند إمز الملونة لقضمة مقرمشة ومرحة.',
+ 22, true, 'new', 8)
 on conflict (id) do nothing;
 
 -- =============================================
