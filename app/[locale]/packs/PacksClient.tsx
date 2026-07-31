@@ -276,12 +276,12 @@ export default function PacksClient({ products, packs }: { products: Product[]; 
               {cookieFries && (
                 <WeightBoxCard product={cookieFries}
                   title={{ en: "Fries Party Box", fr: "Frites Party Box", ar: "بوكس فرايز الحفلة" }}
-                  referenceGrams={200} minGrams={200} maxGrams={2000} step={100} />
+                  referenceGrams={250} minGrams={250} maxGrams={2000} step={100} />
               )}
               {cookiePops && (
                 <WeightBoxCard product={cookiePops}
                   title={{ en: "Pop's Party Box", fr: "Pop's Party Box", ar: "بوكس بوبس الحفلة" }}
-                  referenceGrams={500} minGrams={500} maxGrams={2000} step={100} />
+                  referenceGrams={250} minGrams={250} maxGrams={2000} step={100} />
               )}
             </div>
           </div>
