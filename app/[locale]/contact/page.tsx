@@ -69,21 +69,13 @@ const socials = [
 export default function ContactPage() {
   const t = useTranslations('contact');
   const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'sent'>('idle');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('sending');
-    try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      setStatus(res.ok ? 'sent' : 'error');
-    } catch {
-      setStatus('error');
-    }
+    const text = `Bonjour, je suis ${form.name} (${form.email}).\n\n${form.message}`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+    setStatus('sent');
   };
 
   return (
@@ -129,9 +121,9 @@ export default function ContactPage() {
           <div className="p-8">
             {status === 'sent' ? (
               <div className="text-center py-8">
-                <div className="text-7xl mb-4">💌</div>
-                <h3 className="font-display text-2xl font-bold text-plum mb-2">Message envoyé !</h3>
-                <p className="text-gray-400 mb-6">Nous vous répondrons très vite 🍪</p>
+                <div className="text-7xl mb-4">💬</div>
+                <h3 className="font-display text-2xl font-bold text-plum mb-2">Direction WhatsApp !</h3>
+                <p className="text-gray-400 mb-6">Ton message est prêt, il ne reste qu'à l'envoyer sur WhatsApp 🍪</p>
                 <button onClick={() => { setStatus('idle'); setForm({ name: '', email: '', message: '' }); }}
                   className="bg-rose-main text-white px-8 py-3 rounded-full font-semibold hover:bg-rose-deep transition-all shadow-md">
                   Envoyer un autre message
@@ -162,15 +154,9 @@ export default function ContactPage() {
                     placeholder="Écris ton message ici..."
                     className="w-full border-2 border-pink-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-main transition-colors bg-pink-50/30 resize-none placeholder-gray-300" />
                 </div>
-                {status === 'error' && (
-                  <p className="text-red-500 text-sm text-center">
-                    Erreur d&apos;envoi. Réessaie ou écris-nous directement sur{' '}
-                    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="underline font-semibold">WhatsApp</a>.
-                  </p>
-                )}
-                <button type="submit" disabled={status === 'sending'}
-                  className="bg-gradient-to-r from-rose-main to-pink-400 text-white py-4 rounded-2xl font-bold text-base hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-60">
-                  {status === 'sending' ? 'Envoi...' : <>{t('send')} 💌</>}
+                <button type="submit"
+                  className="bg-gradient-to-r from-rose-main to-pink-400 text-white py-4 rounded-2xl font-bold text-base hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                  {t('send')} 💬
                 </button>
               </form>
             )}
