@@ -31,7 +31,7 @@ const socials = [
   {
     label: 'Facebook',
     handle: 'Sweet by Sisters',
-    href: 'https://www.facebook.com/share/183kCCcvJj/?mibextid=wwXIfr',
+    href: 'https://www.facebook.com/share/1BNbqWENXD/?mibextid=wwXIfr',
     gradient: 'from-blue-400 to-blue-600',
     shadow: 'shadow-blue-200',
     icon: (
@@ -43,7 +43,7 @@ const socials = [
   {
     label: 'TikTok',
     handle: '@sweetbysisters',
-    href: '#',
+    href: 'https://www.tiktok.com/@sweetbysisters?_r=1&_t=ZS-98VSy2GT7H2',
     gradient: 'from-gray-700 to-gray-900',
     shadow: 'shadow-gray-300',
     icon: (
